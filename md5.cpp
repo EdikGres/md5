@@ -62,7 +62,7 @@
  * This processes one or more 64-byte data blocks, but does NOT update the bit
  * counters.  There are no alignment requirements.
  */
-static const void *body(MD5_CTX *ctx, const void *data, unsigned long size)
+static const void *body(MD5_C *ctx, const void *data, unsigned long size)
 {
     const unsigned char *ptr;
     MD5_u32plus a, b, c, d;
@@ -168,8 +168,8 @@ static const void *body(MD5_CTX *ctx, const void *data, unsigned long size)
 
     return ptr;
 }
-
-void MD5_Init(MD5_CTX *ctx)
+namespace md5{
+void init(MD5_C *ctx)
 {
     ctx->a = 0x67452301;
     ctx->b = 0xefcdab89;
@@ -180,7 +180,7 @@ void MD5_Init(MD5_CTX *ctx)
     ctx->hi = 0;
 }
 
-void MD5_Update(MD5_CTX *ctx, const void *data, unsigned long size)
+void update(MD5_C *ctx, const void *data, unsigned long size)
 {
     MD5_u32plus saved_lo;
     unsigned long used, available;
@@ -220,7 +220,7 @@ void MD5_Update(MD5_CTX *ctx, const void *data, unsigned long size)
 	(dst)[2] = (unsigned char)((src) >> 16); \
 	(dst)[3] = (unsigned char)((src) >> 24);
 
-void MD5_Final(unsigned char *result, MD5_CTX *ctx)
+void final(unsigned char *result, MD5_C *ctx)
 {
     unsigned long used, available;
 
@@ -251,4 +251,5 @@ void MD5_Final(unsigned char *result, MD5_CTX *ctx)
     OUT(&result[12], ctx->d)
 
     memset(ctx, 0, sizeof(*ctx));
+}
 }
